@@ -1,10 +1,10 @@
 name: Deploy to AWS
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-  workflow_dispatch:
+
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Укажи нужный регион
+          aws-region: eu-north-1  # Укажи нужный регион
 
       - name: Deploy using AWS CLI
         run: |
