@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Creating 3 users, 3 groups, and assigning read-only permissions"
+
+Resources:
+  # Creating Group 1 with read-only permissions
+  ReadOnlyGroup1:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: ReadOnlyGroup1
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+
+  # Creating Group 2 with read-only permissions
+  ReadOnlyGroup2:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: ReadOnlyGroup2
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+
+  # Creating Group 3 with read-only permissions
+  ReadOnlyGroup3:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: ReadOnlyGroup3
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+
+  # Creating User 1 and adding to Group 1
+  User1:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: User1
+      Groups:
+        - !Ref ReadOnlyGroup1
+
+  # Creating User 2 and adding to Group 2
+  User2:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: User2
+      Groups:
+        - !Ref ReadOnlyGroup2
+
+  # Creating User 3 and adding to Group 3
+  User3:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: User3
+      Groups:
+        - !Ref ReadOnlyGroup3
+
+Outputs:
+  User1:
+    Description: "IAM User 1 created"
+    Value: !Ref User1
+  User2:
+    Description: "IAM User 2 created"
+    Value: !Ref User2
+  User3:
+    Description: "IAM User 3 created"
+    Value: !Ref User3
