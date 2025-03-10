@@ -20,7 +20,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      - name: Deploy using AWS CLI
+      - name: Deploy creating users
         run: |
           aws cloudformation deploy \
             --stack-name DevStack \
