@@ -25,4 +25,4 @@ jobs:
           aws cloudformation deploy \
             --stack-name DevStack \
             --template-file Users_managed/create_user_add_permission.yaml \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_NAMED_IAM
