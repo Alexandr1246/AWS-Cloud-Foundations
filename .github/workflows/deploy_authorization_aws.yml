@@ -2,9 +2,9 @@ name: Deploy to AWS
 
 on:
   pull_request:
-    branches:
-      - main
-
+    paths:
+      - 'Users_managed/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -13,14 +13,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-north-1  # Укажи нужный регион
+          aws-region: eu-north-1
 
       - name: Deploy using AWS CLI
         run: |
-          aws s3 ls  # Пример команды, можно заменить на деплой
+          aws cloudformation deploy \
+            --stack-name DevStack \
+            --template-file Users_managed/create_user_add_permission.yaml \
+            --capabilities CAPABILITY_IAM
