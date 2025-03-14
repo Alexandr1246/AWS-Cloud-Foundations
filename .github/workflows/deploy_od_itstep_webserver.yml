@@ -55,6 +55,6 @@ jobs:
         run: |
           aws cloudformation deploy \
             --stack-name MyEC2Stack \
-            --template-file EC2/template.yaml \
+            --template-file EC2/od_itstep_webserver_template.yaml \
             --parameter-overrides KeyName=MyEC2KeyPair \
             --capabilities CAPABILITY_NAMED_IAM
