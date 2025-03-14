@@ -1,26 +1,18 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "EC2 Instance with VPC, Security Group, and Key Pair"
 
-Parameters:
-  VpcCidrBlock:
-    Type: String
-    Default: "10.0.0.0/16"
-    Description: "CIDR block for VPC"
-
-  SubnetCidrBlock:
-    Type: String
-    Default: "10.0.1.0/24"
-    Description: "CIDR block for the public subnet"
-
-  KeyName:
-    Type: String
-    Description: "Name of the key pair to access EC2 instance"
+Mappings:
+  ParameterValues:
+    Default:
+      VpcCidrBlock: "10.0.0.0/16"
+      SubnetCidrBlock: "10.0.1.0/24"
+      KeyName: "MyEC2KeyPair"
 
 Resources:
   MyVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCidrBlock
+      CidrBlock: !FindInMap [ParameterValues, Default, VpcCidrBlock]
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -31,7 +23,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: !Ref SubnetCidrBlock
+      CidrBlock: !FindInMap [ParameterValues, Default, SubnetCidrBlock]
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -88,7 +80,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: "t3.micro"
-      KeyName: !Ref KeyName
+      KeyName: !FindInMap [ParameterValues, Default, KeyName]
       ImageId: !Ref LatestAmiId
       SubnetId: !Ref MySubnet
       SecurityGroupIds:
