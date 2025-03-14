@@ -51,10 +51,17 @@ jobs:
           https://api.github.com/repos/${{ github.repository }}/actions/secrets/AWS_EC2_PRIVATE_KEY \
           -d '{"encrypted_value":"'"$PRIVATE_KEY"'"}'
 
-      - name: Deploy CloudFormation Stack
+      - name: Create CloudFormation Change Set
         run: |
-          aws cloudformation deploy \
+          aws cloudformation create-change-set \
             --stack-name MyEC2Stack \
-            --template-file EC2/od_itstep_webserver_template.yaml \
-            --parameter-overrides KeyName=MyEC2KeyPair \
-            --capabilities CAPABILITY_NAMED_IAM
+            --template-body file://EC2/od_itstep_webserver_template.yaml \
+            --parameters file://EC2/od_itstep_webserver_parameters.json \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --change-set-name MyEC2ChangeSet
+
+      - name: Execute CloudFormation Change Set
+        run: |
+          aws cloudformation execute-change-set \
+            --change-set-name MyEC2ChangeSet \
+            --stack-name MyEC2Stack
