@@ -1,5 +1,14 @@
-{
-  "VpcCidrBlock": "10.0.0.0/16",
-  "SubnetCidrBlock": "10.0.1.0/24",
-  "KeyName": "MyEC2KeyPair"
-}
+[
+  {
+    "ParameterKey": "VpcCidrBlock",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "SubnetCidrBlock",
+    "ParameterValue": "10.0.1.0/24"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "MyEC2KeyPair"
+  }
+]
