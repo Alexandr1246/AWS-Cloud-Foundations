@@ -1,28 +1,60 @@
-name: Deploy to AWS
+name: Deploy EC2 via CloudFormation
 
 on:
   pull_request:
     paths:
-      - 'Users_managed/**'
+      - 'EC2/**'
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Configure AWS Credentials
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      - name: Deploy creating users
+      - name: Check if Key Pair exists
+        id: check-key
+        run: |
+          if aws ec2 describe-key-pairs --key-names MyEC2KeyPair 2>/dev/null; then
+            echo "Key pair already exists."
+            echo "EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Key pair does not exist."
+            echo "EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create EC2 Key Pair (if not exists)
+        if: env.EXISTS == 'false'
+        run: |
+          aws ec2 create-key-pair --key-name MyEC2KeyPair \
+            --query 'KeyMaterial' --output text > MyEC2KeyPair.pem
+          chmod 400 MyEC2KeyPair.pem
+          echo "PRIVATE_KEY=$(cat MyEC2KeyPair.pem | base64 -w 0)" >> $GITHUB_ENV
+
+      - name: Save Private Key to GitHub Secrets
+        if: env.EXISTS == 'false'
+        run: |
+          curl -X PUT -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/actions/secrets/AWS_EC2_PRIVATE_KEY \
+          -d '{"encrypted_value":"'"$PRIVATE_KEY"'"}'
+
+      - name: Deploy CloudFormation Stack
         run: |
           aws cloudformation deploy \
-            --stack-name DevStack \
-            --template-file Users_managed/create_user_add_permission.yaml \
+            --stack-name MyEC2Stack \
+            --template-file template.yaml \
+            --parameter-overrides KeyName=MyEC2KeyPair \
             --capabilities CAPABILITY_NAMED_IAM
