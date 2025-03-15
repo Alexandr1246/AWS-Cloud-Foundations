@@ -56,5 +56,5 @@ jobs:
           aws cloudformation deploy \
             --stack-name MyEC2Stack \
             --template-file EC2/od_itstep_webserver_template.yaml \
-            --capabilities CAPABILITY_NAMED_IAM
-            --debug
+            --capabilities CAPABILITY_NAMED_IAM \
+            --debug 2>&1 | tee deploy_debug.log
