@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "EC2 Instance with VPC, Security Group, and Key Pair"
 
 Parameters:
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+
   VpcCidrBlock:
     Type: String
     Default: "10.0.0.0/16"
@@ -90,7 +93,7 @@ Resources:
     Properties:
       InstanceType: "t3.micro"
       KeyName: !Ref KeyName
-      ImageId: !Ref LatestAmiId
+      ImageId: !Ref LatestAmiId  # Получаем AMI из параметра SSM
       SubnetId: !Ref MySubnet
       SecurityGroupIds:
         - !Ref SecurityGroup
@@ -98,5 +101,6 @@ Resources:
         - Key: Name
           Value: "od_itstep_webserver"
 
-  LatestAmiId:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+  Parameters:
+    LatestAmiId:
+      Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
