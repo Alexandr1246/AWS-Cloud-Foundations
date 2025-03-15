@@ -4,6 +4,7 @@ Description: "EC2 Instance with VPC, Security Group, and Key Pair"
 Parameters:
   LatestAmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Description: "Amazon Linux 2023 latest AMI"
 
   VpcCidrBlock:
     Type: String
@@ -17,7 +18,6 @@ Parameters:
 
   KeyName:
     Type: String
-    Default: "MyEC2KeyPair"
     Description: "Name of the key pair to access EC2 instance"
 
 Resources:
@@ -93,14 +93,10 @@ Resources:
     Properties:
       InstanceType: "t3.micro"
       KeyName: !Ref KeyName
-      ImageId: !Ref LatestAmiId  # Получаем AMI из параметра SSM
+      ImageId: !Ref LatestAmiId
       SubnetId: !Ref MySubnet
       SecurityGroupIds:
         - !Ref SecurityGroup
       Tags:
         - Key: Name
           Value: "od_itstep_webserver"
-
-  Parameters:
-    LatestAmiId:
-      Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
