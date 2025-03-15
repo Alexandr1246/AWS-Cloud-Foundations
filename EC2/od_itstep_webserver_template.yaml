@@ -6,10 +6,12 @@ Parameters:
     Type: String
     Default: "10.0.0.0/16"
     Description: "CIDR block for VPC"
+
   SubnetCidrBlock:
     Type: String
     Default: "10.0.1.0/24"
     Description: "CIDR block for the public subnet"
+
   KeyName:
     Type: String
     Default: "MyEC2KeyPair"
