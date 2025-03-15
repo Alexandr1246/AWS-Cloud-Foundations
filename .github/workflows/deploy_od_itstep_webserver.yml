@@ -55,7 +55,7 @@ jobs:
         run: |
           aws cloudformation deploy \
             --stack-name MyEC2Stack \
-            --template-file EC2\od_itstep_webserver_template.yaml \
+            --template-file EC2/od_itstep_webserver_template.yaml \
             --capabilities CAPABILITY_NAMED_IAM \
             --parameter-overrides LatestAmiId=/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64
 #           --debug 2>&1 | tee deploy_debug.log
