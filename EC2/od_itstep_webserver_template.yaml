@@ -99,6 +99,4 @@ Resources:
           Value: "od_itstep_webserver"
 
   LatestAmiId:
-    Type: AWS::SSM::Parameter::Value<String>
-    Properties:
-      Name: "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
