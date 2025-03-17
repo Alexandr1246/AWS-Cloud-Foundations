@@ -36,7 +36,6 @@ Resources:
             Iops: 3000
             VolumeSize: 10
             VolumeType: gp3
-            Throughput: 125
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
@@ -47,10 +46,6 @@ Resources:
       Tags:
         - Key: Name
           Value: od-itstep
-      MetadataOptions:
-        HttpEndpoint: enabled
-        HttpPutResponseHopLimit: 2
-        HttpTokens: required
       PrivateDnsNameOptions:
         HostnameType: ip-name
         EnableResourceNameDnsARecord: true
