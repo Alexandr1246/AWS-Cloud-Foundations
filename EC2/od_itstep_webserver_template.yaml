@@ -1,102 +1,55 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "EC2 Instance with VPC, Security Group, and Key Pair"
-
-Parameters:
-  LatestAmiId:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Description: "Amazon Linux 2023 latest AMI"
-
-  VpcCidrBlock:
-    Type: String
-    Default: "10.0.0.0/16"
-    Description: "CIDR block for VPC"
-
-  SubnetCidrBlock:
-    Type: String
-    Default: "10.0.1.0/24"
-    Description: "CIDR block for the public subnet"
-
-  KeyName:
-    Type: String
-    Description: "Name of the key pair to access EC2 instance"
-
 Resources:
-  MyVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !Ref VpcCidrBlock
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      Tags:
-        - Key: Name
-          Value: "MyVPC"
-
-  MySubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: !Ref SubnetCidrBlock
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: "MyPublicSubnet"
-
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref MyVPC
-      InternetGatewayId: !Ref InternetGateway
-
-  RouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref MyVPC
-
-  PublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: AttachGateway
-    Properties:
-      RouteTableId: !Ref RouteTable
-      DestinationCidrBlock: "0.0.0.0/0"
-      GatewayId: !Ref InternetGateway
-
-  RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref MySubnet
-      RouteTableId: !Ref RouteTable
-
-  SecurityGroup:
+  LaunchWizard2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Allow SSH, HTTP, and HTTPS access"
-      VpcId: !Ref MyVPC
+      GroupName: launch-wizard-2
+      GroupDescription: launch-wizard-2 created 2025-03-17T08:45:34.331Z
+      VpcId: vpc-07d6cba4f67675fb4
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: "0.0.0.0/0"
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: "0.0.0.0/0"
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: "0.0.0.0/0"
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
 
-  MyEC2Instance:
+Resources:
+  EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: "t3.micro"
-      KeyName: !Ref KeyName
-      ImageId: !Ref LatestAmiId
-      SubnetId: !Ref MySubnet
-      SecurityGroupIds:
-        - !Ref SecurityGroup
+      ImageId: ami-0c2e61fdcb5495691
+      InstanceType: t3.micro
+      KeyName: MyEC2KeyPair
+      BlockDeviceMappings:
+        - DeviceName: /dev/sdb
+          Ebs:
+            Encrypted: false
+            DeleteOnTermination: false
+            Iops: 3000
+            VolumeSize: 10
+            VolumeType: gp3
+            Throughput: 125
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref LaunchWizard2SecurityGroup
+      CreditSpecification:
+        CPUCredits: unlimited
       Tags:
         - Key: Name
-          Value: "od_itstep_webserver"
+          Value: od-itstep
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpPutResponseHopLimit: 2
+        HttpTokens: required
+      PrivateDnsNameOptions:
+        HostnameType: ip-name
+        EnableResourceNameDnsARecord: true
+        EnableResourceNameDnsAAAARecord: false
