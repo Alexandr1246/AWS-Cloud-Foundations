@@ -11,14 +11,14 @@ resource "aws_vpc" "lab_vpc" {
 resource "aws_subnet" "subnet1" {
   vpc_id            = aws_vpc.lab_vpc.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "eu-north-1a"
 }
 
 # --- Create Subnet 2 ---
 resource "aws_subnet" "subnet2" {
   vpc_id            = aws_vpc.lab_vpc.id
   cidr_block        = "10.0.3.0/24"
-  availability_zone = "us-east-1b"
+  availability_zone = "eu-north-1b"
 }
 
 # --- Security Group for RDS ---
@@ -68,10 +68,10 @@ resource "aws_security_group" "web_sg" {
 
 # --- Web Server Instance ---
 resource "aws_instance" "web_server" {
-  ami           = "ami-12345678"
-  instance_type = "t2.micro"
+  ami           = "ami-0c2e61fdcb5495691"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.subnet1.id
-  security_groups = [aws_security_group.web_sg.name]
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   user_data = <<-EOF
               #!/bin/bash
